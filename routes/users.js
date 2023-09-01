@@ -17,6 +17,9 @@ const {
 // возвращает всех пользователей
 router.get('/', getUsers);
 
+// возвращает текущего пользователя
+router.get('/me', getCurrentUser);
+
 // возвращает пользователя по _id
 router.get(
   '/:userId',
@@ -27,9 +30,6 @@ router.get(
   }),
   findUser,
 );
-
-// возвращает текущего пользователя
-router.get('/me', getCurrentUser);
 
 // обновляет профиль
 router.patch('/me', validationUpdateUser, updateUserProfile);

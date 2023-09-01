@@ -105,35 +105,6 @@ const updateUserAvatar = (req, res, next) => {
     .catch(next);
 };
 
-/* const getCurrentUser = (req, res, next) => {
-  User.findById(req.user._id)
-    .orFail(() => {
-      throw new ErrorCodeNotFound('Пользователь не найден');
-    })
-    // .then((user) => res.status(200).send({ user }))
-    .then((user) => res.status(200).send({ data: user }))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        throw new ErrorCodeBadRequest('Переданы некорректные данные');
-      } else if (err.message === 'NotFound') {
-        throw new ErrorCodeNotFound('Пользователь не найден');
-      }
-    })
-    .catch(next);
-}; */
-
-// const getCurrentUser = (req, res, next) => {
-//   const { _id } = req.user;
-//   User.find({ _id })
-//     .then((user) => {
-//       if (!user) {
-//         next(new ErrorCodeNotFound('User not found!'));
-//       }
-//       return res.send(...user);
-//     })
-//     .catch(next);
-// };
-
 const getCurrentUser = (req, res, next) => {
   const userId = req.user._id;
   User.findById(userId)

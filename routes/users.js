@@ -1,4 +1,3 @@
-const { celebrate, Joi } = require('celebrate');
 const router = require('express').Router();
 const {
   getUsers,
@@ -9,7 +8,7 @@ const {
 } = require('../controllers/users');
 
 const {
-  // validationUserId,
+  validationUserId,
   validationUpdateUser,
   validationUpdateAvatar,
 } = require('../middlewares/validation');
@@ -21,15 +20,7 @@ router.get('/', getUsers);
 router.get('/me', getCurrentUser);
 
 // возвращает пользователя по _id
-router.get(
-  '/:userId',
-  celebrate({
-    params: Joi.object().keys({
-      userId: Joi.string().length(24).hex().required(),
-    }),
-  }),
-  findUser,
-);
+router.get('/:userId', validationUserId, findUser);
 
 // обновляет профиль
 router.patch('/me', validationUpdateUser, updateUserProfile);

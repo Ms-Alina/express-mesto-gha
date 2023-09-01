@@ -1,4 +1,3 @@
-// const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
@@ -22,13 +21,8 @@ const findUser = (req, res, next) => {
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
-        //   throw new ErrorCodeBadRequest('Переданы некорректные данные');
-        // } else if (err.message === 'NotFound') {
-        //   throw new ErrorCodeNotFound('Пользователь по указанному _id не найден');
         next(new ErrorCodeBadRequest('Переданы некорректные данные'));
       }
-      // })
-      // .catch(next);
       if (err.message === 'NotFound') {
         next(new ErrorCodeNotFound('Пользователь по указанному _id не найден'));
       }

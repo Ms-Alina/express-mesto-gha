@@ -37,16 +37,22 @@ const findUser = (req, res, next) => {
 };
 
 const createUser = (req, res, next) => {
-  // eslint-disable-next-line object-curly-newline
-  const { name, about, avatar, email } = req.body;
+  const {
+    name,
+    about,
+    avatar,
+    email,
+    password,
+  } = req.body;
 
-  bcrypt.hash(req.body.password, 10)
-    .then((hash) => {
-      User.create({
-        name, about, avatar, email, password: hash,
-      });
-    })
-    // .then((user) => res.status(201).send(user))
+  bcrypt.hash(password, 10)
+    .then((hash) => User.create({
+      name,
+      about,
+      avatar,
+      email,
+      password: hash,
+    }))
     .then(() => {
       res.status(201).send({
         data: {
@@ -54,37 +60,11 @@ const createUser = (req, res, next) => {
         },
       });
     })
-    .catch((err) => {
-      if (err.code === 11000) {
-        next(new ErrorCodeConflict('Пользователь уже существует'));
+    .catch((e) => {
+      if (e.code === 11000) {
+        next(new ErrorCodeConflict('Этот email уже зарегистрирован'));
       }
     });
-  //     .catch((e) => {
-  //       if (e.code === 11000) {
-  //         next(new ErrorCodeConflict('Email is already'));
-  //       } else if (e instanceof mongoose.Error.ValidationError) {
-  //         const message = Object.values(e.errors)
-  //           .map((error) => error.message)
-  //           .join('; ');
-  //         next(new ErrorCodeBadRequest(message));
-  //       } else {
-  //         next(e);
-  //       }
-  //     });
-  // };
-  // .catch((err) => {
-  //   // if (err.name === 'ValidationError') {
-  //   //   throw new ErrorCodeBadRequest('Переданы некорректные данные при создании пользователя');
-  //   // } else
-  //   if (err.code === 11000) {
-  //     next(new ErrorCodeConflict('Пользователь с таким email уже существует'));
-  //   } else if (err instanceof mongoose.Error.ValidationError) {
-  //     const message = Object.values(err.errors).map((error) => error.message).join('; ');
-  //     next(new ErrorCodeBadRequest(message));
-  //   } else {
-  //     next(err);
-  //   }
-  // });
 };
 
 const updateUserProfile = (req, res, next) => {
@@ -142,14 +122,26 @@ const updateUserAvatar = (req, res, next) => {
     .catch(next);
 }; */
 
+// const getCurrentUser = (req, res, next) => {
+//   const { _id } = req.user;
+//   User.find({ _id })
+//     .then((user) => {
+//       if (!user) {
+//         next(new ErrorCodeNotFound('User not found!'));
+//       }
+//       return res.send(...user);
+//     })
+//     .catch(next);
+// };
+
 const getCurrentUser = (req, res, next) => {
-  const { _id } = req.user;
-  User.find({ _id })
+  const userId = req.user._id;
+  User.findById(userId)
+    .orFail(() => {
+      throw new ErrorCodeNotFound('Пользователь с таким id не найден');
+    })
     .then((user) => {
-      if (!user) {
-        next(new ErrorCodeNotFound('User not found!'));
-      }
-      return res.send(...user);
+      res.status(200).send({ data: user });
     })
     .catch(next);
 };

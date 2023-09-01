@@ -21,12 +21,12 @@ const findUser = (req, res, next) => {
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new ErrorCodeBadRequest('Переданы некорректные данные'));
+        return next(new ErrorCodeBadRequest('Переданы некорректные данные'));
       }
       if (err.message === 'NotFound') {
-        next(new ErrorCodeNotFound('Пользователь по указанному _id не найден'));
+        return next(new ErrorCodeNotFound('Пользователь по указанному _id не найден'));
       }
-      next(err);
+      return next(err);
     });
 };
 
@@ -54,10 +54,11 @@ const createUser = (req, res, next) => {
         },
       });
     })
-    .catch((e) => {
-      if (e.code === 11000) {
-        next(new ErrorCodeConflict('Этот email уже зарегистрирован'));
+    .catch((err) => {
+      if (err.code === 11000) {
+        return next(new ErrorCodeConflict('Этот email уже зарегистрирован'));
       }
+      return next(err);
     });
 };
 
@@ -74,10 +75,10 @@ const updateUserProfile = (req, res, next) => {
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        throw new ErrorCodeBadRequest('Переданы некорректные данные при обновлении профиля');
+        return next(new ErrorCodeBadRequest('Переданы некорректные данные при обновлении профиля'));
       }
-    })
-    .catch(next);
+      return next(err);
+    });
 };
 
 const updateUserAvatar = (req, res, next) => {
@@ -93,10 +94,10 @@ const updateUserAvatar = (req, res, next) => {
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        throw new ErrorCodeBadRequest('Переданы некорректные данные при обновлении аватара');
+        return next(new ErrorCodeBadRequest('Переданы некорректные данные при обновлении аватара'));
       }
-    })
-    .catch(next);
+      return next(err);
+    });
 };
 
 const getCurrentUser = (req, res, next) => {
